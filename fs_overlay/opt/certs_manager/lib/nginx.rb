@@ -1,23 +1,31 @@
 module Nginx
   def self.setup
     compiled_basic_config = ERBBinding.new('/var/lib/nginx-conf/nginx.conf.erb').compile
-
-    File.open('/etc/nginx/nginx.conf', 'w') do |f|
-      f.write compiled_basic_config
+    file_nginx_conf = '/etc/nginx/nginx.conf'
+    if !File.exists? file_nginx_conf
+      File.open(file_nginx_conf, 'w') do |f|
+        f.write compiled_basic_config
+      end
     end
   end
 
   def self.config_http(domain)
-    File.open("/etc/nginx/conf.d/#{domain.name}.conf", 'w') do |f|
-      f.write compiled_domain_config(domain, false)
+    file_domain_conf = "/etc/nginx/conf.d/#{domain.name}.conf"
+    if !File.exists? file_domain_conf
+      File.open(file_domain_conf, 'w') do |f|
+        f.write compiled_domain_config(domain, false)
+      end
     end
 
     reload
   end
 
   def self.config_ssl(domain)
-    File.open("/etc/nginx/conf.d/#{domain.name}.ssl.conf", 'w') do |f|
-      f.write compiled_domain_config(domain, true)
+    file_domain_ssl_conf = "/etc/nginx/conf.d/#{domain.name}.ssl.conf"
+    if !File.exists? file_domain_ssl_conf
+      File.open(file_domain_ssl_conf, 'w') do |f|
+        f.write compiled_domain_config(domain, true)
+      end
     end
 
     reload
